@@ -1,5 +1,4 @@
 import os
-import hashlib
 import re
 
 def download_rockyou():
@@ -10,18 +9,21 @@ def create_modified_dictionary():
     # Abre el diccionario original
     with open("rockyou.txt", "r", encoding="utf-8", errors="ignore") as f:
         # Crea un diccionario vacío
-        modified_dictionary = {}
+        modified_dictionary = []
 
         # Itera sobre cada contraseña en el diccionario original
         line_count = 0
         for line in f:
-            # Verifica si el primer caracter es una letra
-            if re.match("^[a-zA-Z]", line[0]):
-                # Crea un hash de la contraseña
-                password_hash = hashlib.sha256(line.encode("utf-8")).hexdigest()
+            # Elimina espacios en blanco al principio y al final
+            line = line.strip()
+            
+            # Verifica si la contraseña no está vacía y si el primer carácter es una letra
+            if line and re.match("^[a-zA-Z]", line[0]):
+                # Convierte la primera letra a mayúscula y agrega "0" al final
+                modified_password = line[0].upper() + line[1:] + "0"
 
-                # Agrega el hash a la contraseña modificada
-                modified_dictionary[password_hash] = line
+                # Agrega la contraseña modificada a la lista
+                modified_dictionary.append(modified_password)
 
                 # Incrementa el contador de líneas
                 line_count += 1
@@ -32,7 +34,7 @@ def create_modified_dictionary():
 
     # Abre el diccionario modificado
     with open("destino/rockyou_mod.dic", "w", encoding="utf-8") as f2:
-        for password in modified_dictionary.keys():
+        for password in modified_dictionary:
             f2.write(password + "\n")
 
     # Imprime el número de líneas del diccionario modificado
